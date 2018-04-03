@@ -16,10 +16,9 @@ type Message struct {
 	CreatedAt string `json:"created_at"`
 }
 
-var topic = "virgin_messages"
-
 func main() {
 	kafkaBrokerHost := flag.String("kafka", "0.0.0.0:9092", "Kafka broker address. Default: 0.0.0.0:9092")
+	topic := flag.String("topic", "firebus", "Destination topic. Default: firebus")
 	countMessages := flag.Int("count", 100, "Count messages in a group. Default: 100")
 
 	flag.Parse()
@@ -40,7 +39,7 @@ func main() {
 		marshalledMessage, _ := json.Marshal(message)
 
 		kafkaProducer.Produce(&kafka.Message{
-			TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
+			TopicPartition: kafka.TopicPartition{Topic: topic, Partition: kafka.PartitionAny},
 			Value:          marshalledMessage,
 		}, nil)
 		if i%1000000 == 0 {
